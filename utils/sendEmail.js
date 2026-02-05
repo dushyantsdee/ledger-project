@@ -1,29 +1,26 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+/*
+|--------------------------------------------------------------------------
+| SEND EMAIL UTILITY (RESEND)
+|--------------------------------------------------------------------------
+| Future changes:
+| - custom templates
+| - branded emails
+*/
 const sendEmail = async (to, subject, html) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,        // 🔑 IMPORTANT
-      secure: true,     // 🔑 must be true for 465
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      connectionTimeout: 10000,
-    });
-
-    await transporter.sendMail({
-      from: `"Ledger App" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+      from: "Ledger App <onboarding@resend.dev>",
       to,
       subject,
-      html,
+      html
     });
-
-    console.log("Email sent successfully");
-  } catch (err) {
-    console.error("EMAIL SEND ERROR:", err);
-    throw err;
+  } catch (error) {
+    console.error("Email send failed:", error);
+    throw new Error("Email service failed");
   }
 };
 
