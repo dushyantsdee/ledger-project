@@ -13,29 +13,30 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
-// middlewares
+// ================= MIDDLEWARES =================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// frontend static files
+// ================= STATIC FRONTEND =================
+// frontend folder must contain index.html
 app.use(express.static(path.join(__dirname, "frontend")));
 
-// ✅ ADD THIS ROOT ROUTE
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "login.html"));
-});
-
-// api routes
+// ================= API ROUTES =================
 app.use("/api/user", userRoutes);
 app.use("/api/ledger", ledgerRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-// ⚠️ Render-compatible PORT
+// ================= FALLBACK ROUTE =================
+// for direct refresh or wrong route
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
+
+// ================= SERVER =================
 const PORT = process.env.PORT || 3000;
 
-// server
 app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log(`Server running on ${PORT}`);
 });
