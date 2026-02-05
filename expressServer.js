@@ -21,13 +21,21 @@ app.use(express.urlencoded({ extended: true }));
 // frontend static files
 app.use(express.static(path.join(__dirname, "frontend")));
 
+// ✅ ADD THIS ROOT ROUTE
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "login.html"));
+});
+
 // api routes
 app.use("/api/user", userRoutes);
 app.use("/api/ledger", ledgerRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
+// ⚠️ Render-compatible PORT
+const PORT = process.env.PORT || 3000;
+
 // server
-app.listen(3000, () => {
-  console.log("Server running on 3000");
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
 });
