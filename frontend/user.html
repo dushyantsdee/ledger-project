@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<script>
+if (!localStorage.getItem("token")) location.href="login.html";
+</script>
+
+<div class="app">
+
+  <div class="sidebar">
+    <h2>Ledger</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active" href="user.html">Users</a>
+    <a href="profile.html">Profile</a>
+    <a onclick="logout()">Logout</a>
+  </div>
+
+  <div class="main">
+    <div class="header"><h1>Users</h1></div>
+
+    <div class="card">
+      <h3>Add User</h3>
+      <form id="userForm">
+        <input id="name" placeholder="Name" required>
+        <input id="village" placeholder="Village" required>
+        <input id="phone" placeholder="Phone">
+        <input id="interestRate" placeholder="Interest Rate">
+        <button>Add User</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>User List</h3>
+      <div id="userList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="user.js"></script>
+<script>
+function logout(){
+  localStorage.clear();
+  location.href="login.html";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ledger</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script>
+  if (!localStorage.getItem("token")) {
+    window.location.href = "login.html";
+  }
+</script>
+<div class="mobile-header">
+  <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+  <span>Ledger</span>
+</div>
+
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Ledger App</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="user.html">Users</a>
+    <a class="active" href="ledger.html">Ledger</a>
+    <a href="profile.html">Profile</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <h2 id="userName">Ledger</h2>
+
+    <div class="ledger-layout">
+
+      <!-- LEFT SIDE -->
+      <div class="ledger-left">
+
+        <!-- SUMMARY -->
+        <div class="ledger-summary">
+          <div class="summary-card credit">
+            Total Credit <br> ₹ <span id="totalCredit">0</span>
+          </div>
+
+          <div class="summary-card debit">
+            Total Debit <br> ₹ <span id="totalDebit">0</span>
+          </div>
+
+          <div class="summary-card balance">
+            Balance <br> ₹ <span id="finalBalance">0</span>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="ledger-table-wrapper">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Particular</th>
+                <th>Credit</th>
+                <th>Debit</th>
+                <th>Balance</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerBody"></tbody>
+          </table>
+          <div class="ledger-cards" id="ledgerCards"></div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="ledger-right">
+        <div class="card">
+          <h3>Add / Edit Entry</h3>
+
+          <input type="date" id="entryDate">
+          <input type="text" id="particular" placeholder="Particular (Reason)">
+          <input type="number" id="amount" placeholder="Amount">
+
+          <select id="type">
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
+          </select>
+
+          <button onclick="addEntry()">Save Entry</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="ledger.js"></script>
+</body>
+</html>
