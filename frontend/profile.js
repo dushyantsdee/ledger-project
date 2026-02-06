@@ -1,31 +1,41 @@
-const token = localStorage.getItem("token");
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
 
-if (!token) {
-  window.location.href = "login.html";
-}
-
-fetch("http://localhost:3000/api/auth/me", {
-  headers: {
-    Authorization: "Bearer " + token
+  // Agar token hi nahi hai
+  if (!token) {
+    window.location.href = "login.html";
+    return;
   }
-})
-  .then(res => res.json())
-  .then(owner => {
-    document.getElementById("email").innerText = owner.email;
-    document.getElementById("ownerId").innerText = owner._id;
-  });
 
-function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("userId");
-  window.location.href = "login.html";
-}
+  fetch("/api/auth/me", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Unauthorized");
+      }
+      return res.json();
+    })
+    .then(data => {
+      // Safety check
+      if (!data || !data.email || !data._id) {
+        throw new Error("Invalid user data");
+      }
 
-function goBack() {
-  window.location.href = "user.html";
-}
+      // HTML elements
+      const emailEl = document.getElementById("email");
+      const ownerIdEl = document.getElementById("ownerId");
 
-function goChangePassword() {
-  window.location.href = "change-password.html";
-}
-
+      emailEl.innerText = data.email;
+      ownerIdEl.innerText = data._id;
+    })
+    .catch(err => {
+      console.error("Profile load error:", err);
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    });
+});

@@ -77,11 +77,12 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 // ================= FORGOT PASSWORD =================
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
+
+    console.log("🔐 Forgot password request for:", email);
 
     const owner = await Owner.findOne({ email });
     if (!owner) {
@@ -96,15 +97,20 @@ router.post("/forgot-password", async (req, res) => {
 
     const resetLink = `${BASE_URL}/reset-password.html?token=${token}`;
 
+    console.log("🔗 Reset link:", resetLink);
+
     await sendEmail(
       email,
       "Reset your password",
-      `<p>Click below to reset password:</p><a href="${resetLink}">${resetLink}</a>`
+      `<p>Click below to reset password:</p>
+       <a href="${resetLink}">${resetLink}</a>`
     );
+
+    console.log("📨 Reset email sent to:", email);
 
     res.json({ message: "Reset link sent" });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Forgot password error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
