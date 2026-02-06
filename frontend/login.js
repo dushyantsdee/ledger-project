@@ -3,7 +3,7 @@ function login() {
   const password = document.getElementById("password").value;
   const errorEl = document.getElementById("error");
 
-  fetch("http://localhost:3000/api/auth/login", {
+  fetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -14,7 +14,7 @@ function login() {
         localStorage.setItem("token", data.token);
         window.location.href = "user.html";
       } else {
-        errorEl.innerText = "Invalid login";
+        errorEl.innerText = data.message || "Login failed";
       }
     });
 }
