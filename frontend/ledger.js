@@ -34,7 +34,9 @@ async function loadLedger() {
   const res = await fetch(`${BASE_URL}/api/ledger/${userId}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  entries = await res.json();
+
+  const data = await res.json();
+  entries = data.entries || [];   // ✅ MAIN FIX
 
   setupYearDropdown();
   renderTable();
