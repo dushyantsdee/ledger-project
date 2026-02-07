@@ -1,35 +1,37 @@
 /* ===============================
-   AUTH PAGES (LOGIN / REGISTER)
+   AUTH PAGES – PREMIUM UI
+   (Login / Register / Forgot / Reset)
 =============================== */
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 body {
   min-height: 100vh;
+  background: linear-gradient(135deg, #1d2671, #c33764);
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1e3a8a, #9333ea);
+  justify-content: center;
 }
 
 /* ===============================
    AUTH CONTAINER
 =============================== */
 
-.auth-container {
-  background: #ffffff;
+.auth-container,
+.auth-box {
   width: 100%;
   max-width: 380px;
-  padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  background: #ffffff;
+  padding: 28px 26px;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
   text-align: center;
-  animation: fadeIn 0.6s ease;
+  animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
@@ -43,33 +45,41 @@ body {
   }
 }
 
-.auth-container h2 {
-  margin-bottom: 6px;
+/* ===============================
+   HEADINGS & TEXT
+=============================== */
+
+.auth-container h2,
+.auth-box h2 {
   font-size: 22px;
+  margin-bottom: 8px;
   color: #111827;
 }
 
-.auth-container .sub {
+.auth-container .sub,
+.auth-box p {
   font-size: 14px;
   color: #6b7280;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 /* ===============================
    INPUTS
 =============================== */
 
-.auth-container input {
+.auth-container input,
+.auth-box input {
   width: 100%;
   padding: 12px 14px;
   margin-bottom: 14px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
   font-size: 14px;
-  transition: 0.2s;
+  transition: 0.25s;
 }
 
-.auth-container input:focus {
+.auth-container input:focus,
+.auth-box input:focus {
   outline: none;
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
@@ -79,23 +89,24 @@ body {
    BUTTON
 =============================== */
 
-.auth-container button {
+.auth-container button,
+.auth-box button {
   width: 100%;
   padding: 12px;
-  margin-top: 5px;
+  border-radius: 12px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  font-size: 15px;
+  font-weight: 700;
   color: white;
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
-  transition: 0.25s;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  transition: 0.3s;
 }
 
-.auth-container button:hover {
+.auth-container button:hover,
+.auth-box button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(79,70,229,0.35);
+  box-shadow: 0 12px 30px rgba(99,102,241,0.45);
 }
 
 /* ===============================
@@ -104,14 +115,13 @@ body {
 
 .link {
   margin-top: 14px;
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 14px;
 }
 
 .link a {
-  color: #4f46e5;
+  color: #6366f1;
+  font-weight: 600;
   text-decoration: none;
-  font-weight: 500;
 }
 
 .link a:hover {
@@ -119,15 +129,15 @@ body {
 }
 
 /* ===============================
-   STATUS / ERROR
+   STATUS / MESSAGE
 =============================== */
 
+#msg,
 .status,
-.error,
-#msg {
-  margin-top: 14px;
+.error {
+  margin-top: 12px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .status.success {
@@ -144,12 +154,13 @@ body {
 }
 
 /* ===============================
-   MOBILE
+   MOBILE FRIENDLY
 =============================== */
 
 @media (max-width: 420px) {
-  .auth-container {
+  .auth-container,
+  .auth-box {
     margin: 0 12px;
-    padding: 24px;
+    padding: 24px 20px;
   }
 }
