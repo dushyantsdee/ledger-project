@@ -218,18 +218,16 @@ button:hover {
 }
 
 .summary-card {
-  background: linear-gradient(135deg, #ffffff, #f9fafb);
-  padding: 18px;
-  border-radius: 14px;
-  font-size: 15px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
 .summary-card span {
-  display: block;
-  margin-top: 6px;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .summary-card.credit {
@@ -245,53 +243,51 @@ button:hover {
 }
 
 /* ===============================
-   LEDGER TABLE
+   LEDGER TABLE – CLEAN STANDARD LOOK
 =============================== */
 
 .ledger-table-wrapper {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 14px 32px rgba(0,0,0,0.08);
-}
-
-.ledger-table {
-  width: 100%;
-  border-collapse: collapse;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 .ledger-table thead {
-  background: #0f172a;
-  color: #ffffff;
+  background: #111827;
 }
 
 .ledger-table th {
-  padding: 14px;
+  color: #f9fafb;
+  padding: 12px;
   font-size: 13px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
 }
 
 .ledger-table td {
-  padding: 14px;
+  padding: 12px;
   font-size: 14px;
-  text-align: center;
-  border-bottom: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+.ledger-table tbody tr:nth-child(even) {
+  background: #f9fafb;
 }
 
 .ledger-table tbody tr:hover {
-  background: #f8fafc;
+  background: #eef2ff;
 }
 
-/* COLORS */
-.green {
+/* CREDIT / DEBIT */
+.ledger-table td.green {
   color: #16a34a;
-  font-weight: 700;
+  font-weight: 600;
 }
 
-.red {
+.ledger-table td.red {
   color: #dc2626;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* ===============================
@@ -524,4 +520,30 @@ button:hover {
     margin-bottom: 12px;
     box-shadow: var(--shadow);
   }
+}
+
+/* ===============================
+   FIX: REMOVE DUPLICATE CARD VIEW
+   Desktop = Table only
+=============================== */
+
+@media (min-width: 769px) {
+  .ledger-cards {
+    display: none !important;
+  }
+}
+
+/* ===============================
+   BALANCE COLOR RULE
+=============================== */
+
+/* TABLE BALANCE */
+.ledger-table td.balance-negative {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.ledger-table td.balance-positive {
+  color: #16a34a;
+  font-weight: 700;
 }
