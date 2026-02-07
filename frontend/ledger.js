@@ -94,17 +94,49 @@ function makeRow(e, row, balance, empty) {
   const tr = document.createElement("tr");
 
   tr.innerHTML = `
-    <td><input data-row="${row}" data-col="0" value="${e.date ? formatDate(e.date) : ""}"></td>
-    <td><input data-row="${row}" data-col="1" value="${e.particular || ""}"></td>
-    <td><input data-row="${row}" data-col="2" value="${e.type === "credit" ? e.amount : ""}"></td>
-    <td><input data-row="${row}" data-col="3" value="${e.type === "debit" ? e.amount : ""}"></td>
-    <td class="${balance < 0 ? "red" : "green"}">${empty ? "" : balance}</td>
+    <!-- Select -->
+    <td>
+      <input type="checkbox" ${empty ? "disabled" : ""}>
+    </td>
+
+    <!-- No -->
+    <td>${row + 1}</td>
+
+    <!-- Date -->
+    <td>
+      <input type="date" data-row="${row}" data-col="0"
+        value="${e.date ? formatDate(e.date) : ""}">
+    </td>
+
+    <!-- Particular -->
+    <td>
+      <input data-row="${row}" data-col="1"
+        value="${e.particular || ""}">
+    </td>
+
+    <!-- Credit -->
+    <td>
+      <input data-row="${row}" data-col="2"
+        value="${e.type === "credit" ? e.amount : ""}">
+    </td>
+
+    <!-- Debit -->
+    <td>
+      <input data-row="${row}" data-col="3"
+        value="${e.type === "debit" ? e.amount : ""}">
+    </td>
+
+    <!-- Balance -->
+    <td class="${balance < 0 ? "red" : "green"}">
+      ${empty ? "" : balance}
+    </td>
   `;
 
   tr.dataset.empty = empty;
   tr.dataset.id = e._id || "";
   return tr;
 }
+
 
 // ================= EVENTS =================
 function attachHandlers() {
