@@ -42,10 +42,12 @@ async function loadLedger() {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    if (!res.ok) throw new Error();
+    if (!res.ok) throw new Error("Ledger API failed");
 
     const data = await res.json();
-    entries = Array.isArray(data) ? data : [];
+    console.log("LEDGER API RAW RESPONSE:", data);
+
+    entries = Array.isArray(data) ? data : data.entries || [];
 
     setupYearDropdown();
     renderTable();
