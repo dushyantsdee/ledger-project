@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Profile</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <script>
   if (!localStorage.getItem("token")) {
-    window.location.href = "login.html";
+    window.location.replace("index.html");
   }
 </script>
 
@@ -21,84 +22,99 @@
     <a href="dashboard.html">Dashboard</a>
     <a href="user.html">Users</a>
     <a href="profile.html" class="active">Profile</a>
-
-    <a href="#" onclick="logout()">Logout</a>
+    <a onclick="logout()">Logout</a>
   </div>
 
   <!-- MAIN -->
   <div class="main">
-
     <h2>Owner Profile</h2>
 
-    <!-- OWNER INFO -->
+    <!-- PROFILE INFO -->
     <div class="card profile-card">
       <h3>Account Information</h3>
 
       <p><b>Email:</b> <span id="email">Loading...</span></p>
       <p><b>Owner ID:</b> <span id="ownerId">Loading...</span></p>
+      <p id="status">Loading profile...</p>
     </div>
 
     <!-- CHANGE PASSWORD -->
     <div class="card form-card">
       <h3>Change Password</h3>
 
-      <input type="password" id="oldPassword" placeholder="Old Password">
-      <input type="password" id="newPassword" placeholder="New Password">
+      <input type="password" id="oldPassword" placeholder="Old Password" />
+      <input type="password" id="newPassword" placeholder="New Password" />
 
       <button onclick="changePassword()">Update Password</button>
 
       <p id="msg"></p>
     </div>
-
   </div>
 </div>
 
 <script>
+const BASE_URL = "https://ledger-project.onrender.com";
 const token = localStorage.getItem("token");
 
-// LOAD PROFILE
-fetch("http://localhost:3000/api/auth/me", {
-  headers: { Authorization: "Bearer " + token }
-})
-  .then(res => res.json())
-  .then(data => {
+// ================= LOAD PROFILE =================
+(async function () {
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+
     document.getElementById("email").innerText = data.email;
     document.getElementById("ownerId").innerText = data._id;
-  });
+    document.getElementById("status").innerText = "Profile loaded";
+  } catch {
+    localStorage.clear();
+    window.location.replace("index.html");
+  }
+})();
 
-// CHANGE PASSWORD
-function changePassword() {
-  const oldPassword = document.getElementById("oldPassword").value;
-  const newPassword = document.getElementById("newPassword").value;
+// ================= CHANGE PASSWORD =================
+async function changePassword() {
+  const oldPassword = document.getElementById("oldPassword").value.trim();
+  const newPassword = document.getElementById("newPassword").value.trim();
   const msg = document.getElementById("msg");
 
   msg.innerText = "";
 
-  fetch("http://localhost:3000/api/auth/change-password", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token
-    },
-    body: JSON.stringify({ oldPassword, newPassword })
-  })
-    .then(res => res.json())
-    .then(data => {
-      msg.innerText = data.message || "Password updated";
-      msg.style.color = "green";
+  if (!oldPassword || !newPassword) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ oldPassword, newPassword })
+    });
+
+    const data = await res.json();
+    msg.innerText = data.message || "Updated";
+
+    if (res.ok) {
       document.getElementById("oldPassword").value = "";
       document.getElementById("newPassword").value = "";
-    })
-    .catch(() => {
-      msg.innerText = "Error updating password";
-      msg.style.color = "red";
-    });
+    }
+  } catch {
+    localStorage.clear();
+    window.location.replace("index.html");
+  }
 }
 
-// LOGOUT
+// ================= LOGOUT =================
 function logout() {
   localStorage.clear();
-  window.location.href = "login.html";
+  window.location.replace("index.html");
 }
 </script>
 

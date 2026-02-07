@@ -1,24 +1,129 @@
+/* ===============================
+   DASHBOARD CARDS
+=============================== */
+
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  margin-top: 10px;
 }
 
-/* NUMBER STYLE */
-.card p {
-  font-size: 28px;
-  font-weight: bold;
+/* ===============================
+   CARD BASE
+=============================== */
+
+.cards .card {
+  position: relative;
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  transition: 0.3s ease;
+  overflow: hidden;
 }
 
-/* COLOR BORDERS */
-.credit {
+.cards .card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.4),
+    transparent
+  );
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.cards .card:hover::after {
+  opacity: 1;
+}
+
+.cards .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+}
+
+/* ===============================
+   TEXT
+=============================== */
+
+.cards .card h3 {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.cards .card p {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0;
+  color: #111827;
+}
+
+/* ===============================
+   LEFT COLOR BAR
+=============================== */
+
+.card.credit {
   border-left: 6px solid #22c55e;
 }
 
-.debit {
+.card.debit {
   border-left: 6px solid #ef4444;
 }
 
-.balance {
+.card.balance {
   border-left: 6px solid #6366f1;
+}
+
+/* ===============================
+   ICON HINT (OPTIONAL)
+=============================== */
+
+.card.credit::before,
+.card.debit::before,
+.card.balance::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  opacity: 0.08;
+}
+
+.card.credit::before {
+  background: #22c55e;
+}
+
+.card.debit::before {
+  background: #ef4444;
+}
+
+.card.balance::before {
+  background: #6366f1;
+}
+
+/* ===============================
+   MOBILE
+=============================== */
+
+@media (max-width: 600px) {
+  .cards {
+    gap: 14px;
+  }
+
+  .cards .card {
+    padding: 18px;
+  }
+
+  .cards .card p {
+    font-size: 26px;
+  }
 }

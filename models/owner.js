@@ -1,32 +1,33 @@
 const mongoose = require("mongoose");
 
-const ownerSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
+const ownerSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
 
-  password: {
-    type: String,
-    required: true
-  },
+    password: {
+      type: String,
+      required: true
+    },
 
-  // 🔐 FORGOT PASSWORD
-  resetToken: {
-    type: String,
-    default: null
-  },
+    resetToken: {
+      type: String,
+      default: null
+    },
 
-  resetTokenExpiry: {
-    type: Date,
-    default: null
+    resetTokenExpiry: {
+      type: Date,
+      default: null
+    }
   },
-
-  createdAt: {
-    type: Date,
-    default: Date.now
+  {
+    timestamps: true
   }
-});
+);
 
 module.exports = mongoose.model("Owner", ownerSchema);

@@ -1,41 +1,37 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("token");
+// ===============================
+// PROFILE PAGE SCRIPT
+// ===============================
 
-  // Agar token hi nahi hai
+const BASE_URL = "https://ledger-project.onrender.com";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const emailEl = document.getElementById("email");
+  const idEl = document.getElementById("ownerId");
+  const statusEl = document.getElementById("status");
+
+  const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = "login.html";
+    window.location.replace("index.html");
     return;
   }
 
-  fetch("/api/auth/me", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    }
-  })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error("Unauthorized");
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-      return res.json();
-    })
-    .then(data => {
-      // Safety check
-      if (!data || !data.email || !data._id) {
-        throw new Error("Invalid user data");
-      }
-
-      // HTML elements
-      const emailEl = document.getElementById("email");
-      const ownerIdEl = document.getElementById("ownerId");
-
-      emailEl.innerText = data.email;
-      ownerIdEl.innerText = data._id;
-    })
-    .catch(err => {
-      console.error("Profile load error:", err);
-      localStorage.removeItem("token");
-      window.location.href = "login.html";
     });
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+
+    emailEl.innerText = data.email;
+    idEl.innerText = data._id;
+    statusEl.innerText = "Profile loaded";
+
+  } catch {
+    localStorage.clear();
+    window.location.replace("index.html");
+  }
 });

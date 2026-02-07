@@ -7,20 +7,26 @@
 </head>
 <body>
 
-  <div class="auth-container">
-    <h2>Register Owner</h2>
+<script>
+  if (localStorage.getItem("token")) {
+    window.location.replace("dashboard.html");
+  }
+</script>
 
-    <form id="registerForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <input type="text" id="adminKey" placeholder="Admin Key" required />
+<div class="auth-container">
+  <h2>Register Owner</h2>
 
-      <button type="submit">Register</button>
-    </form>
+  <form id="registerForm">
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <input type="text" id="adminKey" placeholder="Admin Key" required />
 
-    <p id="status" class="status"></p>
-  </div>
+    <button type="submit">Register</button>
+  </form>
 
-  <script src="register.js"></script>
+  <p id="status" class="status"></p>
+</div>
+
+<script src="register.js"></script>
 </body>
 </html>

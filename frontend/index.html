@@ -30,6 +30,12 @@
     </div>
   </div>
 
+  <script>
+    if (localStorage.getItem("token")) {
+      window.location.replace("dashboard.html");
+    }
+  </script>
+
   <script src="login.js"></script>
 </body>
 </html>

@@ -4,45 +4,47 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-
 // =======================
 // CREATE USER (OWNER-WISE)
 // =======================
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const user = new User({
-      name: req.body.name,
-      village: req.body.village,
-      phone: req.body.phone,
-      interestRate: req.body.interestRate || 0,
+    const { name, village, phone, interestRate } = req.body;
 
-      // 🔥 OWNER LINK
+    if (!name || !village) {
+      return res.status(400).json({ message: "Name and village required" });
+    }
+
+    const user = await User.create({
+      name,
+      village,
+      phone,
+      interestRate: interestRate || 0,
       ownerId: req.ownerId
     });
 
-    await user.save();
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("CREATE USER ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-
 // =======================
-// GET ALL USERS (OWNER-WISE) ✅ VERY IMPORTANT
+// GET ALL USERS (OWNER-WISE)
 // =======================
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const users = await User.find({ ownerId: req.ownerId });
+    const users = await User.find({ ownerId: req.ownerId }).sort({ createdAt: -1 });
     res.json(users);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("GET USERS ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-
 // =======================
-// GET SINGLE USER BY ID (OWNER-WISE)
+// GET SINGLE USER (OWNER-WISE)
 // =======================
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
@@ -57,28 +59,29 @@ router.get("/:id", authMiddleware, async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("GET USER ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
-
 
 // =======================
 // DELETE USER (OWNER-WISE)
 // =======================
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
-    const deleted = await User.deleteOne({
+    const result = await User.deleteOne({
       _id: req.params.id,
       ownerId: req.ownerId
     });
 
-    if (deleted.deletedCount === 0) {
+    if (result.deletedCount === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json({ message: "User deleted" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("DELETE USER ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

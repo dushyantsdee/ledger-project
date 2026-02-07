@@ -8,14 +8,14 @@
 
 <script>
   if (!localStorage.getItem("token")) {
-    window.location.href = "login.html";
+    window.location.replace("index.html");
   }
 </script>
+
 <div class="mobile-header">
   <span class="menu-btn" onclick="toggleSidebar()">☰</span>
   <span>Ledger</span>
 </div>
-
 
 <div class="app">
 
@@ -26,7 +26,7 @@
     <a href="user.html">Users</a>
     <a class="active" href="ledger.html">Ledger</a>
     <a href="profile.html">Profile</a>
-    <a href="#" onclick="logout()">Logout</a>
+    <a onclick="logout()">Logout</a>
   </div>
 
   <!-- MAIN -->
@@ -36,10 +36,9 @@
 
     <div class="ledger-layout">
 
-      <!-- LEFT SIDE -->
+      <!-- LEFT -->
       <div class="ledger-left">
 
-        <!-- SUMMARY -->
         <div class="ledger-summary">
           <div class="summary-card credit">
             Total Credit <br> ₹ <span id="totalCredit">0</span>
@@ -54,7 +53,6 @@
           </div>
         </div>
 
-        <!-- TABLE -->
         <div class="ledger-table-wrapper">
           <table class="ledger-table">
             <thead>
@@ -69,12 +67,12 @@
             </thead>
             <tbody id="ledgerBody"></tbody>
           </table>
-          <div class="ledger-cards" id="ledgerCards"></div>
 
+          <div class="ledger-cards" id="ledgerCards"></div>
         </div>
       </div>
 
-      <!-- RIGHT SIDE -->
+      <!-- RIGHT -->
       <div class="ledger-right">
         <div class="card">
           <h3>Add / Edit Entry</h3>
