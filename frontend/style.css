@@ -225,6 +225,8 @@ button:hover {
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
+
+
 .summary-card span {
   font-size: 22px;
   font-weight: 700;
@@ -241,6 +243,17 @@ button:hover {
 .summary-card.balance {
   border-left: 6px solid #6366f1;
 }
+
+/* SUMMARY BALANCE COLOR */
+
+.summary-card.balance span {
+  color: #16a34a;
+}
+
+.summary-card.balance.negative span {
+  color: #dc2626;
+}
+
 
 /* ===============================
    LEDGER TABLE – CLEAN STANDARD LOOK

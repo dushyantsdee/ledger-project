@@ -18,7 +18,13 @@ const userName = document.getElementById("userName");
 
 const totalCreditEl = document.getElementById("totalCredit");
 const totalDebitEl = document.getElementById("totalDebit");
-const finalBalanceEl = document.getElementById("finalBalance");
+finalBalanceEl.innerText = runningBalance;
+finalBalanceEl.classList.remove("negative");
+
+if (runningBalance < 0) {
+  finalBalanceEl.classList.add("negative");
+}
+
 
 const entryDate = document.getElementById("entryDate");
 const particular = document.getElementById("particular");
