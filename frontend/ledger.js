@@ -1,6 +1,7 @@
 // ===============================
-// LEDGER JS – REGISTER + YEAR MODE
+// LEDGER JS – REGISTER + YEAR MODE (FIXED)
 // ===============================
+console.log("LEDGER JS LOADED - FIXED VERSION");
 
 const BASE_URL = "https://ledger-project.onrender.com";
 const token = localStorage.getItem("token");
@@ -8,10 +9,15 @@ const userId = localStorage.getItem("userId");
 
 if (!token || !userId) window.location.replace("index.html");
 
+// DOM
 const ledgerBody = document.getElementById("ledgerBody");
 const userName = document.getElementById("userName");
 const yearSelect = document.getElementById("yearSelect");
+const totalCreditEl = document.getElementById("totalCredit");
+const totalDebitEl = document.getElementById("totalDebit");
+const finalBalanceEl = document.getElementById("finalBalance");
 
+// STATE
 let entries = [];
 let selectedYear = new Date().getFullYear();
 const EMPTY_ROWS = 10;
@@ -31,25 +37,36 @@ const EMPTY_ROWS = 10;
 
 // ================= LOAD LEDGER =================
 async function loadLedger() {
-  const res = await fetch(`${BASE_URL}/api/ledger/${userId}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/api/ledger/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-  const data = await res.json();
-  entries = data.entries || [];   // ✅ MAIN FIX
+    if (!res.ok) throw new Error();
 
-  setupYearDropdown();
-  renderTable();
+    const data = await res.json();
+    entries = Array.isArray(data) ? data : [];
+
+    setupYearDropdown();
+    renderTable();
+
+  } catch (err) {
+    console.error(err);
+    alert("Ledger load failed");
+  }
 }
 
 // ================= YEAR DROPDOWN =================
 function setupYearDropdown() {
-  const years = [...new Set(entries.map(e => new Date(e.date).getFullYear()))];
+  const years = [
+    ...new Set(entries.map(e => new Date(e.date).getFullYear()))
+  ];
 
   if (!years.includes(selectedYear)) years.push(selectedYear);
-  years.sort();
+  years.sort((a, b) => a - b);
 
-  yearSelect.innerHTML = "";
+  yearSelect.innerHTML = `<option value="">Select Year</option>`;
+
   years.forEach(y => {
     const opt = document.createElement("option");
     opt.value = y;
@@ -67,24 +84,38 @@ function setupYearDropdown() {
 // ================= RENDER TABLE =================
 function renderTable() {
   ledgerBody.innerHTML = "";
+
   let balance = 0;
+  let credit = 0;
+  let debit = 0;
 
   const yearEntries = entries.filter(
     e => new Date(e.date).getFullYear() === selectedYear
   );
 
   yearEntries.forEach((e, i) => {
-    if (e.type === "credit") balance += e.amount;
-    else balance -= e.amount;
+    if (e.type === "credit") {
+      balance += e.amount;
+      credit += e.amount;
+    } else {
+      balance -= e.amount;
+      debit += e.amount;
+    }
 
     ledgerBody.appendChild(makeRow(e, i, balance, false));
   });
 
+  // Empty register-style rows
   for (let i = 0; i < EMPTY_ROWS; i++) {
     ledgerBody.appendChild(
       makeRow({}, yearEntries.length + i, balance, true)
     );
   }
+
+  totalCreditEl.innerText = credit;
+  totalDebitEl.innerText = debit;
+  finalBalanceEl.innerText = balance;
+  finalBalanceEl.className = balance < 0 ? "red" : "green";
 
   attachHandlers();
 }
@@ -93,50 +124,40 @@ function renderTable() {
 function makeRow(e, row, balance, empty) {
   const tr = document.createElement("tr");
 
-  tr.innerHTML = `
-    <!-- Select -->
-    <td>
-      <input type="checkbox" ${empty ? "disabled" : ""}>
-    </td>
+  tr.dataset.empty = empty;
+  tr.dataset.id = e._id || "";
 
-    <!-- No -->
+  tr.innerHTML = `
+    <td><input type="checkbox" ${empty ? "disabled" : ""}></td>
     <td>${row + 1}</td>
 
-    <!-- Date -->
     <td>
       <input type="date" data-row="${row}" data-col="0"
         value="${e.date ? formatDate(e.date) : ""}">
     </td>
 
-    <!-- Particular -->
     <td>
       <input data-row="${row}" data-col="1"
         value="${e.particular || ""}">
     </td>
 
-    <!-- Credit -->
     <td>
       <input data-row="${row}" data-col="2"
         value="${e.type === "credit" ? e.amount : ""}">
     </td>
 
-    <!-- Debit -->
     <td>
       <input data-row="${row}" data-col="3"
         value="${e.type === "debit" ? e.amount : ""}">
     </td>
 
-    <!-- Balance -->
     <td class="${balance < 0 ? "red" : "green"}">
       ${empty ? "" : balance}
     </td>
   `;
 
-  tr.dataset.empty = empty;
-  tr.dataset.id = e._id || "";
   return tr;
 }
-
 
 // ================= EVENTS =================
 function attachHandlers() {
@@ -153,12 +174,12 @@ function attachHandlers() {
 
 // ================= NAVIGATION =================
 function moveNext(input) {
-  const row = input.dataset.row;
+  const row = Number(input.dataset.row);
   const col = Number(input.dataset.col);
 
   const next =
     document.querySelector(`input[data-row="${row}"][data-col="${col + 1}"]`) ||
-    document.querySelector(`input[data-row="${Number(row) + 1}"][data-col="0"]`);
+    document.querySelector(`input[data-row="${row + 1}"][data-col="0"]`);
 
   if (next) next.focus();
 }
@@ -171,33 +192,31 @@ async function saveCell(e) {
   const v = getRowValues(row);
   if (!v.date || !v.particular || !v.amount) return;
 
-  if (tr.dataset.empty === "true") {
-    await fetch(`${BASE_URL}/api/ledger`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        userId,
-        date: v.date,
-        particular: v.particular,
-        amount: v.amount,
-        type: v.type
-      })
-    });
-  } else {
-    await fetch(`${BASE_URL}/api/ledger/${tr.dataset.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(v)
-    });
-  }
+  try {
+    if (tr.dataset.empty === "true") {
+      await fetch(`${BASE_URL}/api/ledger`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ userId, ...v })
+      });
+    } else {
+      await fetch(`${BASE_URL}/api/ledger/${tr.dataset.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(v)
+      });
+    }
 
-  loadLedger();
+    loadLedger();
+  } catch {
+    alert("Save failed");
+  }
 }
 
 // ================= HELPERS =================
