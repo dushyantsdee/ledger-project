@@ -1,37 +1,20 @@
 // ===============================
-// LEDGER FRONTEND JS
+// LEDGER JS – REGISTER + YEAR MODE
 // ===============================
 
 const BASE_URL = "https://ledger-project.onrender.com";
-
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem("userId");
 
-if (!token || !userId) {
-  window.location.replace("index.html");
-}
+if (!token || !userId) window.location.replace("index.html");
 
-// DOM
 const ledgerBody = document.getElementById("ledgerBody");
-const ledgerCards = document.getElementById("ledgerCards");
 const userName = document.getElementById("userName");
+const yearSelect = document.getElementById("yearSelect");
 
-const totalCreditEl = document.getElementById("totalCredit");
-const totalDebitEl = document.getElementById("totalDebit");
-finalBalanceEl.innerText = runningBalance;
-finalBalanceEl.classList.remove("negative");
-
-if (runningBalance < 0) {
-  finalBalanceEl.classList.add("negative");
-}
-
-
-const entryDate = document.getElementById("entryDate");
-const particular = document.getElementById("particular");
-const amount = document.getElementById("amount");
-const type = document.getElementById("type");
-
-let editEntryId = null;
+let entries = [];
+let selectedYear = new Date().getFullYear();
+const EMPTY_ROWS = 10;
 
 // ================= USER INFO =================
 (async function () {
@@ -39,173 +22,172 @@ let editEntryId = null;
     const res = await fetch(`${BASE_URL}/api/user/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-
-    if (!res.ok) throw new Error();
     const user = await res.json();
-
-    userName.innerText = `Ledger of ${user.name} (${user.village})`;
+    userName.innerText = `${user.name} (${user.village})`;
   } catch {
-    localStorage.clear();
-    window.location.replace("index.html");
+    logout();
   }
 })();
 
 // ================= LOAD LEDGER =================
 async function loadLedger() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/ledger/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  const res = await fetch(`${BASE_URL}/api/ledger/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  entries = await res.json();
 
-    if (!res.ok) throw new Error();
-
-    const entries = await res.json();
-
-    ledgerBody.innerHTML = "";
-    ledgerCards.innerHTML = "";
-
-    let balance = 0;
-    let credit = 0;
-    let debit = 0;
-
-    entries.forEach(e => {
-      let cr = "";
-      let dr = "";
-
-      if (e.type === "credit") {
-        cr = e.amount;
-        credit += e.amount;
-        balance += e.amount;
-      } else {
-        dr = e.amount;
-        debit += e.amount;
-        balance -= e.amount;
-      }
-
-      ledgerBody.innerHTML += `
-        <tr>
-          <td>${new Date(e.date).toLocaleDateString()}</td>
-          <td>${e.particular}</td>
-          <td class="green">${cr}</td>
-          <td class="red">${dr}</td>
-          <td class="${balance >= 0 ? "green" : "red"}">${balance}</td>
-          <td>
-            <button onclick="editEntry('${e._id}','${e.particular}',${e.amount},'${e.type}','${e.date}')">Edit</button>
-            <button onclick="deleteEntry('${e._id}')">Delete</button>
-          </td>
-        </tr>
-      `;
-
-      ledgerCards.innerHTML += `
-        <div class="ledger-card">
-          <div><b>Date:</b> ${new Date(e.date).toLocaleDateString()}</div>
-          <div><b>Reason:</b> ${e.particular}</div>
-          <div><b>Amount:</b> ₹ ${e.amount}</div>
-          <div><b>Type:</b> ${e.type}</div>
-          <div class="actions">
-            <button onclick="editEntry('${e._id}','${e.particular}',${e.amount},'${e.type}','${e.date}')">Edit</button>
-            <button onclick="deleteEntry('${e._id}')">Delete</button>
-          </div>
-        </div>
-      `;
-    });
-
-    totalCreditEl.innerText = credit;
-    totalDebitEl.innerText = debit;
-    finalBalanceEl.innerText = balance;
-
-  } catch {
-    localStorage.clear();
-    window.location.replace("index.html");
-  }
+  setupYearDropdown();
+  renderTable();
 }
 
-// ================= ADD / UPDATE =================
-async function addEntry() {
-  const payload = {
-    userId,
-    particular: particular.value.trim(),
-    amount: Number(amount.value),
-    type: type.value,
-    date: entryDate.value
+// ================= YEAR DROPDOWN =================
+function setupYearDropdown() {
+  const years = [...new Set(entries.map(e => new Date(e.date).getFullYear()))];
+
+  if (!years.includes(selectedYear)) years.push(selectedYear);
+  years.sort();
+
+  yearSelect.innerHTML = "";
+  years.forEach(y => {
+    const opt = document.createElement("option");
+    opt.value = y;
+    opt.textContent = y;
+    if (y === selectedYear) opt.selected = true;
+    yearSelect.appendChild(opt);
+  });
+
+  yearSelect.onchange = () => {
+    selectedYear = Number(yearSelect.value);
+    renderTable();
   };
+}
 
-  if (!payload.particular || !payload.amount || !payload.date) return;
+// ================= RENDER TABLE =================
+function renderTable() {
+  ledgerBody.innerHTML = "";
+  let balance = 0;
 
-  try {
-    if (editEntryId) {
-      await fetch(`${BASE_URL}/api/ledger/${editEntryId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-      editEntryId = null;
-    } else {
-      await fetch(`${BASE_URL}/api/ledger`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-    }
+  const yearEntries = entries.filter(
+    e => new Date(e.date).getFullYear() === selectedYear
+  );
 
-    resetForm();
-    loadLedger();
-  } catch {
-    localStorage.clear();
-    window.location.replace("index.html");
+  yearEntries.forEach((e, i) => {
+    if (e.type === "credit") balance += e.amount;
+    else balance -= e.amount;
+
+    ledgerBody.appendChild(makeRow(e, i, balance, false));
+  });
+
+  for (let i = 0; i < EMPTY_ROWS; i++) {
+    ledgerBody.appendChild(
+      makeRow({}, yearEntries.length + i, balance, true)
+    );
   }
+
+  attachHandlers();
 }
 
-// ================= EDIT =================
-function editEntry(id, p, a, t, d) {
-  editEntryId = id;
-  particular.value = p;
-  amount.value = a;
-  type.value = t;
-  entryDate.value = new Date(d).toISOString().split("T")[0];
-  document.querySelector(".ledger-right button").innerText = "Update Entry";
+// ================= MAKE ROW =================
+function makeRow(e, row, balance, empty) {
+  const tr = document.createElement("tr");
+
+  tr.innerHTML = `
+    <td><input data-row="${row}" data-col="0" value="${e.date ? formatDate(e.date) : ""}"></td>
+    <td><input data-row="${row}" data-col="1" value="${e.particular || ""}"></td>
+    <td><input data-row="${row}" data-col="2" value="${e.type === "credit" ? e.amount : ""}"></td>
+    <td><input data-row="${row}" data-col="3" value="${e.type === "debit" ? e.amount : ""}"></td>
+    <td class="${balance < 0 ? "red" : "green"}">${empty ? "" : balance}</td>
+  `;
+
+  tr.dataset.empty = empty;
+  tr.dataset.id = e._id || "";
+  return tr;
 }
 
-// ================= DELETE =================
-async function deleteEntry(id) {
-  if (!confirm("Delete this entry?")) return;
+// ================= EVENTS =================
+function attachHandlers() {
+  ledgerBody.querySelectorAll("input").forEach(input => {
+    input.onkeydown = e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        moveNext(input);
+      }
+    };
+    input.onblur = saveCell;
+  });
+}
 
-  try {
-    await fetch(`${BASE_URL}/api/ledger/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` }
+// ================= NAVIGATION =================
+function moveNext(input) {
+  const row = input.dataset.row;
+  const col = Number(input.dataset.col);
+
+  const next =
+    document.querySelector(`input[data-row="${row}"][data-col="${col + 1}"]`) ||
+    document.querySelector(`input[data-row="${Number(row) + 1}"][data-col="0"]`);
+
+  if (next) next.focus();
+}
+
+// ================= SAVE =================
+async function saveCell(e) {
+  const tr = e.target.closest("tr");
+  const row = e.target.dataset.row;
+
+  const v = getRowValues(row);
+  if (!v.date || !v.particular || !v.amount) return;
+
+  if (tr.dataset.empty === "true") {
+    await fetch(`${BASE_URL}/api/ledger`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        userId,
+        date: v.date,
+        particular: v.particular,
+        amount: v.amount,
+        type: v.type
+      })
     });
-    loadLedger();
-  } catch {
-    localStorage.clear();
-    window.location.replace("index.html");
+  } else {
+    await fetch(`${BASE_URL}/api/ledger/${tr.dataset.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(v)
+    });
   }
+
+  loadLedger();
 }
 
-// ================= RESET =================
-function resetForm() {
-  particular.value = "";
-  amount.value = "";
-  entryDate.value = "";
-  type.value = "credit";
-  document.querySelector(".ledger-right button").innerText = "Save Entry";
+// ================= HELPERS =================
+function getRowValues(row) {
+  const date = document.querySelector(`input[data-row="${row}"][data-col="0"]`).value;
+  const particular = document.querySelector(`input[data-row="${row}"][data-col="1"]`).value;
+  const cr = document.querySelector(`input[data-row="${row}"][data-col="2"]`).value;
+  const dr = document.querySelector(`input[data-row="${row}"][data-col="3"]`).value;
+
+  return {
+    date,
+    particular,
+    amount: Number(cr || dr),
+    type: cr ? "credit" : "debit"
+  };
 }
 
-// ================= LOGOUT =================
+function formatDate(d) {
+  return new Date(d).toISOString().split("T")[0];
+}
+
 function logout() {
   localStorage.clear();
   window.location.replace("index.html");
-}
-
-// ================= SIDEBAR =================
-function toggleSidebar() {
-  document.querySelector(".sidebar").classList.toggle("show");
 }
 
 loadLedger();
