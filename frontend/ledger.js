@@ -245,4 +245,62 @@ function logout() {
   window.location.replace("index.html");
 }
 
+function getSelectedRows() {
+  return Array.from(
+    ledgerBody.querySelectorAll('input[type="checkbox"]:checked')
+  ).map(cb => cb.closest("tr"));
+}
+
+function editSelected() {
+  const rows = getSelectedRows();
+
+  if (rows.length === 0) {
+    alert("Select one row to edit");
+    return;
+  }
+
+  if (rows.length > 1) {
+    alert("Edit only one row at a time");
+    return;
+  }
+
+  const tr = rows[0];
+
+  if (tr.dataset.empty === "true") {
+    alert("Cannot edit empty row");
+    return;
+  }
+
+  const inputs = tr.querySelectorAll(
+    'input:not([type="checkbox"])'
+  );
+
+  inputs.forEach(inp => inp.removeAttribute("disabled"));
+  inputs[0].focus();
+}
+
+async function deleteSelected() {
+  const rows = getSelectedRows();
+
+  if (!rows.length) {
+    alert("Select rows to delete");
+    return;
+  }
+
+  if (!confirm("Delete selected entries?")) return;
+
+  for (const tr of rows) {
+    if (tr.dataset.empty === "true") continue;
+
+    await fetch(`${BASE_URL}/api/ledger/${tr.dataset.id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  loadLedger();
+}
+
 loadLedger();

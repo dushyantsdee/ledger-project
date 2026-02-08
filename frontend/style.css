@@ -560,3 +560,43 @@ button:hover {
   color: #16a34a;
   font-weight: 700;
 }
+
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ledger-table th,
+.ledger-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: left;
+}
+
+.ledger-table th {
+  background: #f4f6f8;
+  font-weight: 600;
+}
+
+.ledger-table td input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+}
+
+.ledger-table tr:hover {
+  background: #f9fbff;
+}
+
+.green {
+  color: green;
+  font-weight: 600;
+}
+
+.red {
+  color: red;
+  font-weight: 600;
+}
