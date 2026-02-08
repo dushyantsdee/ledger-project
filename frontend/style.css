@@ -753,3 +753,43 @@ button:hover {
 .ledger-actions button:hover {
   background: #111827;
 }
+
+.ledger-table th:nth-child(1),
+.ledger-table td:nth-child(1) {
+  width: 40px;
+}
+
+.ledger-table th:nth-child(2),
+.ledger-table td:nth-child(2) {
+  width: 60px;
+}
+
+.ledger-table th:nth-child(3),
+.ledger-table td:nth-child(3) {
+  width: 120px;
+}
+
+.ledger-table th:nth-child(4),
+.ledger-table td:nth-child(4) {
+  text-align: left;
+  padding-left: 12px;
+}
+
+.ledger-table th:nth-child(5),
+.ledger-table th:nth-child(6),
+.ledger-table th:nth-child(7) {
+  width: 120px;
+}
+.ledger-table thead tr {
+  border-bottom: 2px solid #111827;
+}
+.ledger-table input[type="checkbox"] {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+.ledger-table td:last-child {
+  font-size: 15px;
+}
+.ledger-actions button {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
