@@ -561,30 +561,40 @@ button:hover {
   font-weight: 700;
 }
 
+
 .ledger-table {
   width: 100%;
   border-collapse: collapse;
+  background: #fff;
   font-size: 14px;
 }
+
+
 
 .ledger-table th,
 .ledger-table td {
-  border: 1px solid #ccc;
+  border: 1px solid #dcdcdc;
   padding: 6px;
-  text-align: left;
+  text-align: center;
 }
+
 
 .ledger-table th {
-  background: #f4f6f8;
+  background: #2f3b52;
+  color: #fff;
   font-weight: 600;
+  padding: 10px 6px;
+  border: 1px solid #2f3b52;
+  text-align: center;
 }
-
 .ledger-table td input {
   width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
+  height: 32px;
+  padding: 4px 6px;
+  border: 1px solid #cfd6e0;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
 }
 
 .ledger-table tr:hover {
@@ -599,4 +609,147 @@ button:hover {
 .red {
   color: red;
   font-weight: 600;
+}
+
+.ledger-table td input[data-col="2"] {
+  color: #1e7e34;
+  font-weight: 600;
+}
+
+.ledger-table td input[data-col="3"] {
+  color: #c82333;
+  font-weight: 600;
+}
+
+.ledger-table td:last-child {
+  font-weight: 700;
+  background: #f8f9fa;
+}
+
+.green {
+  color: #1e7e34;
+}
+
+.red {
+  color: #c82333;
+}
+
+.ledger-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.ledger-actions button {
+  flex: 1;
+  padding: 12px 0;
+  background: #2f3b52;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ledger-actions button:hover {
+  background: #1f293d;
+}
+
+.summary-card.credit {
+  border-left: 4px solid #1e7e34;
+}
+
+.summary-card.debit {
+  border-left: 4px solid #c82333;
+}
+
+.summary-card.balance {
+  border-left: 4px solid #1e7e34;
+}
+/* ===============================
+   LEDGER FINAL OVERRIDE (CLEAN)
+=============================== */
+
+/* TABLE */
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 14px;
+}
+
+.ledger-table th {
+  background: #1f2937;
+  color: #fff;
+  padding: 10px;
+  font-weight: 600;
+  border: 1px solid #1f2937;
+}
+
+.ledger-table td {
+  border: 1px solid #d1d5db;
+  padding: 6px;
+  text-align: center;
+}
+
+/* INPUTS INSIDE TABLE */
+.ledger-table td input {
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* CREDIT / DEBIT */
+.ledger-table td input[data-col="2"] {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.ledger-table td input[data-col="3"] {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* BALANCE */
+.ledger-table td:last-child {
+  font-weight: 700;
+  background: #f9fafb;
+}
+
+.ledger-table td.balance-positive {
+  color: #16a34a;
+}
+
+.ledger-table td.balance-negative {
+  color: #dc2626;
+}
+
+/* ROW HOVER */
+.ledger-table tbody tr:hover {
+  background: #eef2ff;
+}
+
+/* ACTION BUTTONS */
+.ledger-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.ledger-actions button {
+  flex: 1;
+  padding: 12px;
+  background: #1f2937;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ledger-actions button:hover {
+  background: #111827;
 }
